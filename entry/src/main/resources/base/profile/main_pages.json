@@ -5,6 +5,7 @@
     "pages/JustTestPage",
     "pages/NetworkPage",
     "pages/NotificationTestPage",
-    "pages/StateManagementPage"
+    "pages/StateManagementPage",
+    "pages/NormalTestPage"
   ]
 }
