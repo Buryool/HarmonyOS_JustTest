@@ -1,13 +1,9 @@
 import { AGConnectUser, SignInResult, } from '@hw-agconnect/auth-ohos';
 import '@hw-agconnect/auth-ohos';
-import {
-  PhoneAuthProvider,
-  VerifyCodeSettingBuilder,
-  EmailAuthProvider
-} from '@hw-agconnect/auth-ohos';
+import { PhoneAuthProvider, VerifyCodeSettingBuilder, EmailAuthProvider } from '@hw-agconnect/auth-ohos';
 import agconnect from '@hw-agconnect/api-ohos'
-import { Log } from '../common/Log';
-import { AppStorageKit } from '../common/utils/AppStorageKit';
+import { Log } from '../common/utils/Log';
+import { UserLoginUtil } from '../common/utils/UserLoginUtil';
 
 const TAG = "[AGCAuth]";
 
@@ -34,7 +30,7 @@ export class AGCAuth {
 
       return '验证码获取成功';
     } catch (err) {
-      Log.error(TAG, '手机验证码获取失败:' + JSON.stringify(err))
+      Log.log('手机验证码获取失败:' + JSON.stringify(err))
       throw err
     }
   }
@@ -54,32 +50,33 @@ export class AGCAuth {
 
       return '验证码获取成功';
     } catch (err) {
-      Log.error(TAG, '邮箱验证码获取失败:' + JSON.stringify(err))
+      Log.log('邮箱验证码获取失败:' + JSON.stringify(err))
       throw err
     }
   }
 
-  // 获取用户头像
-  static async getImg(uid) {
-    return "https://agc-storage-drcn.platform.dbankcloud.cn/v0/hmqa-bbnx2/defaultAvatar%2Fic_public_avatar1.png?token=ec5c702d-9ed9-4caf-ac7f-4ca205c70e68";
-    /*
-      const headImgs = await DatabaseHelper.userHeadImg_Query_By_uid(uid);
-      if(headImgs && headImgs.length>0){
-        return headImgs[0].imgurl;
-      }else{
-        return 'https://agc-storage-drcn.platform.dbankcloud.cn/v0/hmqa-bbnx2/user_dark.png?token=74d1ae76-2075-4ab2-b702-74ee968eb6ed';
-      }
-      */
-  }
+  // // 获取用户头像
+  // static async getImg(uid) {
+  //   return "https://agc-storage-drcn.platform.dbankcloud.cn/v0/hmqa-bbnx2/defaultAvatar%2Fic_public_avatar1.png?token=ec5c702d-9ed9-4caf-ac7f-4ca205c70e68";
+  //   /*
+  //     const headImgs = await DatabaseHelper.userHeadImg_Query_By_uid(uid);
+  //     if(headImgs && headImgs.length>0){
+  //       return headImgs[0].imgurl;
+  //     }else{
+  //       return 'https://agc-storage-drcn.platform.dbankcloud.cn/v0/hmqa-bbnx2/user_dark.png?token=74d1ae76-2075-4ab2-b702-74ee968eb6ed';
+  //     }
+  //     */
+  // }
 
   // 将AGConnectUser类型的user转换成AgUser（本类中自己定义）类型的user
   public static async Change(user: AGConnectUser) {
     try {
-      let imgurl = await AGCAuth.getImg(user.getUid());
+      // let imgurl = await AGCAuth.getImg(user.getUid());
+      let imgurl = ""
 
       let userExtra = await user.getUserExtra();
 
-      let loginRes = new AgUser(
+      let loginRes = new User(
         user.getUid(),
         imgurl,
         user.getPhone(),
@@ -90,57 +87,65 @@ export class AGCAuth {
 
       return loginRes;
     } catch (err) {
-      Log.error(TAG, JSON.stringify(err))
+      Log.log(JSON.stringify(err))
+
       throw err
     }
   }
 
-  // 手机验证码登录
-  public static async login(isPhonelogin: boolean, username: string, verifyCode: string, countryCode: string = '+86'): Promise<AgUser> {
+  // 手机验证码/邮箱验证码登录
+  // 登录成功后将登录成功的用户信息写入到AppStorage并用首选项持久化到硬盘
+  public static async login(isPhoneLogin: boolean, username: string, verifyCode: string, countryCode: string = '+86'): Promise<User> {
     try {
       let credential = null;
-      if (isPhonelogin) {
+      if (isPhoneLogin) {
         credential = PhoneAuthProvider.credentialWithVerifyCode(countryCode, username, verifyCode);
       } else {
         credential = EmailAuthProvider.credentialWithVerifyCode(username, verifyCode);
       }
 
       let ret: SignInResult = await agconnect.auth().signIn(credential)
-      let user = ret.getUser()
-      // 用户头像
-      let loginRes = await AGCAuth.Change(user)
-      AppStorageKit.SetLoginUser<AgUser>(loginRes, getContext(this))
-      return loginRes
+      let agcUser = ret.getUser()
+      let user = await AGCAuth.Change(agcUser)
+      // 将登录成功的用户信息用首选项持久化到硬盘
+      await UserLoginUtil.setLoginUserToDisk(user, getContext(this))
+      return user
     } catch (err) {
-      Log.error(TAG, JSON.stringify(err))
+      Log.log(JSON.stringify(err))
       throw err
     }
   }
 
-  // 登出
+  // AGC登出
   public static async logout(): Promise<boolean> {
     try {
       await agconnect.auth().signOut()
+      // 从首选项中删除登录用户数据
+      UserLoginUtil.deleteLoginUserFromPreference(getContext(this))
+      // AppStorage中也删除登录用户数据
+      UserLoginUtil.deleteLoginUserFromMemory()
       return true
     } catch (err) {
-      Log.error(TAG, JSON.stringify(err))
+      Log.log(JSON.stringify(err))
       throw err
     }
   }
 
+  // 在AGC中删除用户
   public async deleteUser(): Promise<boolean> {
     try {
       await agconnect.auth().deleteUser()
       return true
     } catch (err) {
-      Log.error(TAG, JSON.stringify(err))
+      Log.log(JSON.stringify(err))
+
       throw err
     }
 
   }
 }
 
-export class AgUser {
+export class User {
   uid: String;
   photoUrl: String;
   phone: String;

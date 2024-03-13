@@ -6,6 +6,9 @@
     "pages/NetworkPage",
     "pages/NotificationTestPage",
     "pages/StateManagementPage",
-    "pages/NormalTestPage"
+    "pages/NormalTestPage",
+    "pages/Account/LoginPage",
+    "pages/Account/LoginByEmailPage",
+    "pages/Account/MinePage"
   ]
 }
