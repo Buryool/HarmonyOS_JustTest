@@ -1,0 +1,10 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/NavigationTestPage",
+    "pages/JustTestPage",
+    "pages/NetworkPage",
+    "pages/NotificationTestPage",
+    "pages/StateManagementPage"
+  ]
+}

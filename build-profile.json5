@@ -1,0 +1,41 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\auto_debug_Application_com.buryool.justtest_80086000136374217.cer",
+          "storePassword": "0000001B5C35AD79E02F47EAD52294511263CBF19B35B9B1406DA1EB9215119A73708450E999817C6F8B4C",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B1C9D4129765B9BE6D7BFF48F1B8921FB46AD08401D93BEDE4CF663B1613CCE2A9F59C02378CE17",
+          "profile": "C:\\Users\\Administrator\\.ohos\\config\\auto_debug_Application_com.buryool.justtest_80086000136374217.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\auto_debug_Application_com.buryool.justtest_80086000136374217.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
