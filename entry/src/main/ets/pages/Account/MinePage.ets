@@ -1,3 +1,11 @@
+import Prompt from '@system.prompt';
+import router from '@ohos.router';
+import { Constants } from '../../common/Constants';
+import { AGCAuth, User } from '../../services/Auth';
+import { formatDate } from '../../common/utils/CommonUtil';
+
+
+
 @Extend(Column) function setColumnStyle(height) {
   .height(height)
   .width('90%')
@@ -18,21 +26,52 @@
   .padding(16)
 }
 
-import Prompt from '@system.prompt';
-import router from '@ohos.router';
-import { Constants } from '../../common/Constants';
-import { AGCAuth, User } from '../../services/Auth';
-import { formatDate } from '../../common/utils/CommonUtil';
-import { UserLoginUtil } from '../../common/utils/UserLoginUtil';
 
+@CustomDialog
+export default struct SetUserNameDialog {
+  controller: CustomDialogController
+  @Link confirm: string
+  input: string = ""
 
+  build() {
+    Column({ space: 10 }) {
+      Text("请输入新用户名")
+        .fontSize(15)
+      TextInput()
+        .width(150)
+        .onChange(value => {
+          this.input = value
+        })
+      Row({space: 20}){
+        Button("确定")
+          .onClick(() => {
+            this.confirm = this.input
+            this.controller.close()
+          })
+        Button("取消")
+          .onClick(() => {
+            this.controller.close()
+          })
+      }
+    }
+    .width(180)
+    .padding(10)
+  }
+}
 
 @Entry
 @Component
 export struct MinePage {
   @StorageLink('user') currentUser: User = new User();
-  @State currentSize:number = 0  // 当前上传大小
-  @State totalSize:number = 0 //上传文件总大小
+  // @State currentSize: number = 0 // 当前上传大小
+  // @State totalSize: number = 0 //上传文件总大小
+  @State userName: string = "默认名字"
+
+  customDialogController: CustomDialogController = new CustomDialogController({
+    builder: SetUserNameDialog({
+      confirm: $userName
+    })
+  })
 
   async loginOut() {
     try {
@@ -42,56 +81,62 @@ export struct MinePage {
       } else {
         Prompt.showToast({ message: '登出失败' })
       }
-    }catch (err){
-      console.log('logout error',JSON.stringify(err));
+    } catch (err) {
+      console.log('logout error', JSON.stringify(err));
     }
   }
 
-
-  uploadProgress(eventData){
-    console.log('eventData->',JSON.stringify(eventData))
-    this.currentSize = eventData.data.uploadSize;
-    this.totalSize = eventData.data.totalSize;
-  }
-
-
-  // 定义自定义弹窗
-  // dialogController: CustomDialogController = new CustomDialogController({
-  //   builder: BindEmailDialog(),
-  //   customStyle: true,
-  //   autoCancel: true
-  // })
+  // uploadProgress(eventData) {
+  //   console.log('eventData->', JSON.stringify(eventData))
+  //   this.currentSize = eventData.data.uploadSize;
+  //   this.totalSize = eventData.data.totalSize;
+  // }
 
   build() {
-
     Row() {
       Column({ space: 20 }) {
 
-        Progress({ value: this.currentSize, total: this.totalSize, type: ProgressType.Linear })
-          .color('#0094ff')
-          .width('100%')
+        // Progress({ value: this.currentSize, total: this.totalSize, type: ProgressType.Linear })
+        //   .color('#0094ff')
+        //   .width('100%')
 
         // 用户昵称和头像部分
         Stack() {
+          // 底板
           Column() {
-            // 头像+昵称
-            Column() {
-              Image($r("app.media.wei_xin_tou_xiang"))
-                .width(64)
-                .aspectRatio(1)
-                .borderRadius(32)
-                .interpolation(ImageInterpolation.High) //减轻低清晰度图片在放大显示时出现的锯齿问题
-
-              Text(this.currentUser.uid.toString())
-                .fontSize(16)
-                .fontWeight(400)
-                .fontColor('#2B364B')
-                .margin({ top: 12 })
-            }
-            .position({ x: 16, y: -32 })
 
           }
-          .setColumnStyle(80)
+          .setColumnStyle(100)
+
+          // 头像+昵称
+          Column() {
+            Image($r("app.media.wei_xin_tou_xiang"))
+              .width(64)
+              .aspectRatio(1)
+              .borderRadius(32)
+              .interpolation(ImageInterpolation.High) //减轻低清晰度图片在放大显示时出现的锯齿问题
+
+            // Text(this.currentUser.uid.toString())
+            Text(this.userName)
+              .fontSize(16)
+              .fontWeight(400)
+              .fontColor('#2B364B')
+              .margin({ top: 5 })
+          }
+          .offset({ x: -110, y: -32 })
+
+          Text("编辑昵称")
+            .fontSize(12)
+            .margin({top: 5})
+            .offset({ x: -110, y: 25 })
+            .fontColor(Color.Gray)
+            .borderWidth(0.5)
+            .borderRadius(5)
+            .padding(1)
+            .onClick(() => {
+              this.customDialogController.open()
+            })
+
         }
         .margin({ top: 88 })
 

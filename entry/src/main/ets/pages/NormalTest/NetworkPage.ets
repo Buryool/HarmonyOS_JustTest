@@ -1,5 +1,5 @@
 import http from '@ohos.net.http'
-import PreferenceUtil from '../common/utils/PreferencesUtil'
+import PreferenceUtil from '../../common/utils/PreferencesUtil'
 
 @Entry
 @Component

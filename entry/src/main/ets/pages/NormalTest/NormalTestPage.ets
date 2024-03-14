@@ -1,8 +1,8 @@
-import IndexItem from '../common/builders/IndexItem'
+import IndexItem from '../../common/builders/IndexItem'
 import common from '@ohos.app.ability.common'
-import CustomDialogTest from '../common/components/CustomDialogTest'
+import CustomDialogTest from '../../common/components/CustomDialogTest'
 import router from '@ohos.router'
-import { ShowText } from '../common/builders/ShowText'
+import { ShowText } from '../../common/builders/ShowText'
 
 // @Extend拓展样式
 @Extend(Button) function button_normal() {

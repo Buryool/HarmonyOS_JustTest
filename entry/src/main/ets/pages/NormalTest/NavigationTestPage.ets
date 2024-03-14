@@ -1,4 +1,4 @@
-import MyNav from '../common/components/MyNavigation'
+import MyNav from '../../common/components/MyNavigation'
 
 @Entry
 @Component

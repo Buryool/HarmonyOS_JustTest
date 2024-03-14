@@ -48,9 +48,6 @@ struct Index {
               IndexItem("NormalTest页", () => router.pushUrl({ url: Constants.PAGE_NORMAL_TEST}))
             }
 
-            ListItem() {
-              IndexItem("测试登录页", () => router.pushUrl({ url: Constants.PAGE_LOGIN}))
-            }
 
           }
           .width("100%")

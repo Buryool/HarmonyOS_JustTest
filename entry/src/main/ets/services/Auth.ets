@@ -105,7 +105,7 @@ export class AGCAuth {
       }
 
       let ret: SignInResult = await agconnect.auth().signIn(credential)
-      let agcUser = ret.getUser()
+      let agcUser:AGConnectUser = ret.getUser()
       let user = await AGCAuth.Change(agcUser)
       // 将登录成功的用户信息用首选项持久化到硬盘
       await UserLoginUtil.setLoginUserToDisk(user, getContext(this))

@@ -1,12 +1,12 @@
 {
   "src": [
     "pages/Index",
-    "pages/NavigationTestPage",
+    "pages/NormalTest/NavigationTestPage",
     "pages/JustTestPage",
-    "pages/NetworkPage",
-    "pages/NotificationTestPage",
-    "pages/StateManagementPage",
-    "pages/NormalTestPage",
+    "pages/NormalTest/NetworkPage",
+    "pages/NormalTest/NotificationTestPage",
+    "pages/NormalTest/StateManagementPage",
+    "pages/NormalTest/NormalTestPage",
     "pages/Account/LoginPage",
     "pages/Account/LoginByEmailPage",
     "pages/Account/MinePage"
